@@ -62,7 +62,7 @@ jQuery(document).ready(function($){
   get_special_info = $('#get_special_info').val() ;
   get_user_password = $('#get_user_password').val() ;
   get_user_name = $('#get_user_name').val() ;
-  get_special_info = $('#get_special_info').val() ;
+
 
 
   var formData = 
@@ -73,9 +73,6 @@ jQuery(document).ready(function($){
   '&get_item_desc=' + get_item_desc+
   '&get_special_info=' + get_special_info;
 
-
-
-  alert(get_client_id) ; 
 
   var ajax_url = plugin_ajax_object.ajax_url;
   var data = {
@@ -101,7 +98,7 @@ jQuery(document).ready(function($){
 
  $(document).on('change', '.get_district_class', function() {
     var selectedCity = $(this).val();
-    alert("Selected option: " + selectedCity);
+ 
   
     var ajax_url = plugin_ajax_object.ajax_url;
     var data = {
@@ -150,7 +147,7 @@ jQuery(document).ready(function($){
 // order sorting by order status  
  $(document).on('change', '.select_order_status', function() {
     var selectedStatus = $(this).val();
-    alert("Selected order: " + selectedStatus);
+  
     var currentURL = window.location.href; // Get the current URL
     // Remove any existing order_status parameter from the URL
     var updatedURL = currentURL.replace(/([&?])order_status=[^&]+/i, '$1');
@@ -214,6 +211,7 @@ $('.push_order').click(function (event) {
     var $tr = $(this).closest("tr");
     var $pushOrderClassElements = $tr.find(".push_order_class");
     var $pushOrderSuccess = $tr.find(".push_order_success");
+    var $getPathaoStatus = $tr.find(".get_pathao_consingment_id");
 
     $.ajax({
         url: ajax_url,
@@ -225,6 +223,8 @@ $('.push_order').click(function (event) {
             alert(response.message) ;
             $pushOrderClassElements.css("display", "none"); 
             $pushOrderSuccess.css("display", "block"); 
+            $getPathaoStatus.text(response.consignment_id);  
+
             $('.show_preloader').removeClass('processing-loader'); //remove preloader 
          }else if(response.status==422){
             //  alert(response.message) ;

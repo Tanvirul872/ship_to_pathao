@@ -125,6 +125,7 @@ echo '<th scope="col">Select Store</th>';
 echo '<th scope="col">Customer Phone</th>';
 echo '<th scope="col">Customer Cod</th>';
 echo '<th scope="col">Order Status</th>';
+echo '<th scope="col"> Consignment Id </th>';
 echo '<th scope="col">Select</th>';
 echo '</tr>';
 echo '</thead>';
@@ -144,6 +145,10 @@ while ( $orders->have_posts() ) {
     // Get the total order amount
     $order_total = (int) $order->get_total();
     $order_status =  $order->get_status();
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'pathao_shipping';
+    $pathao_data = $wpdb->get_row("SELECT * FROM $table_name WHERE  order_id=$order_id");
+    $pathao_delivery_status = $pathao_data->consignment_id ; 
 
     // Get the billing address
     $billing_first_name = $order->get_billing_first_name();
@@ -181,7 +186,7 @@ while ( $orders->have_posts() ) {
     
 <form action="#" id="select_city"  class="select_city_dropdown">
 <label for="get_district">Choose a city:</label> 
-<select id="get_district" class="get_district_class js-example-basic-multiple" name="district">
+<select id="get_district" class="get_district_class" name="district">
   <?php
     global $wpdb;
     $table_name = $wpdb->prefix . 'pathao_city_list';
@@ -229,7 +234,9 @@ while ( $orders->have_posts() ) {
 
     echo '<td class="get_phone" get_phone="'.$billing_phone.'">' . $billing_phone.  '</td>';
     echo '<td class="get_total" get_total="'.$order_total.'" >' . $order_total . '</td>';
-    echo '<td class="get_total" get_status="'.$order_status.'" >' . $order_status . '</td>';
+    echo '<td class="get_status" get_status="'.$order_status.'" >' . $order_status . '</td>';
+    echo '<td class="get_pathao_status" get_pathao_status="'.$pathao_delivery_status.'" ><p class="get_pathao_consingment_id">' . $pathao_delivery_status . '</p></td>';
+    
 
     echo '<td class="push_checkbox">';
     global $wpdb;
@@ -250,17 +257,40 @@ echo '</tbody>';
 echo '</table>';
 
 // Pagination
-echo '<div class="pagination">';
-echo paginate_links(array(
-    'base' => str_replace(999999999, '%#%', esc_url(get_pagenum_link(999999999))),
-    'format' => '?paged=%#%',
+echo '<div class="pagination">'; 
+
+
+// global $orders;
+
+$pagination_args = array(
+    'base' => add_query_arg('paged', '%#%'),
+    'format' => '',
     'current' => max(1, $_GET['paged']),
-    'total' => $orders->max_num_pages
-));
+    'total' => $orders->max_num_pages,
+    'add_args' => array(
+        'order_status' => isset($_GET['order_status']) ? $_GET['order_status'] : ''
+    )
+);
+
+echo paginate_links($pagination_args);
+
+
+
+// echo paginate_links(array( 
+
+
+//     'base' => str_replace(999999999, '%#%', esc_url(get_pagenum_link(999999999))),
+//     'format' => '?paged=',
+//     'current' => max(1, $_GET['paged']),
+//     'total' => $orders->max_num_pages,
+//     'add_args' => array(
+//       'order_status' => isset($_GET['order_status']) ? $_GET['order_status'] : ''
+//      ) 
+// )); 
+
+
 echo '</div>';
-
 wp_reset_postdata();
-
 
 // loop end  
 
@@ -277,160 +307,6 @@ wp_footer();
 
 
 
-add_action( 'wp_ajax_pushapi_to_pathao', 'pushapi_to_pathao' );
-add_action( 'wp_ajax_nopriv_pushapi_to_pathao', 'pushapi_to_pathao' );
-function pushapi_to_pathao() {
-
-    $formdata = [];
-    wp_parse_str($_POST['formData'], $formdata);
-    
-    // print_r($formdata) ; 
-  
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'pathao_settings';
-    
-    // Retrieve data from the database
-    $data = $wpdb->get_row("SELECT * FROM $table_name");
-    
-    
-   $item_description = $data->item_descripton;
-   $special_information = $data->special_information;
-  
-  $client_id = $data->api_client_id;
-  $client_secret = $data->api_client_secret;
-  $username = $data->user_name;
-  $password = $data->user_password;
-  $grant_type = $data->user_password;
-  
-  $headers = array(
-      "accept" => "application/json",
-      "content-Type" => "application/json",
-  );
-
-$data = array(
-    
-    "client_id" => $client_id,
-    "client_secret" => $client_secret,
-    "username" => $username,
-    "password" => $password,
-    "grant_type" => $grant_type, 
-);
-
-
-$url_for_token = "https://api-hermes.pathao.com/aladdin/api/v1/issue-token";  //uncomment later
-$response = wp_remote_post( $url_for_token, array( 
-    'method' => 'POST',
-    // 'timeout' => 45,
-    // 'redirection' => 5,
-    // 'httpversion' => '1.0',
-    // 'blocking' => true,
-    'headers' => $headers,
-    'body' => json_encode($data),
-    // 'cookies' => array()
-));
-
-if ( is_wp_error( $response ) ) {
-    
-} else {
-    $status_code = wp_remote_retrieve_response_code( $response );
-    $response_for_token = json_decode($response['body']); 
-    $access_token = $response_for_token->access_token ;   
-}
-
-// api call for access token end 
-
-// api call for create order start  
-$authorization = "Bearer ".$access_token ; 
-$headers_for_order = array(
-    "authorization" => $authorization,
-    "content-Type" => "application/json",
-    "accept" => "application/json", 
-    
-);
-
-$data_order = array(
-'store_id' => $formdata['get_store'], 
-'merchant_order_id' => $formdata['get_order_id'],
-'sender_name' => $formdata['get_name'],
-'sender_phone' => $formdata['get_phone'],
-'recipient_name' => $formdata['get_name'],
-'recipient_phone' => $formdata['get_phone'],
-'recipient_address' => $formdata['get_address'], 
-'recipient_city' => $formdata['get_city'], 
-'recipient_zone' => $formdata['get_zone'],
-// 'recipient_area' => '2',
-'delivery_type' => '48',
-'item_type' => '2',
-'special_instruction' => $special_information,
-'item_quantity' => '1',
-'item_weight' => '1',
-'amount_to_collect' => $formdata['get_total'],
-'item_description' => $item_description, 
-
-);
-
-
-$url_for_order = "https://api-hermes.pathao.com/aladdin/api/v1/orders";  //uncomment later
-$response_for_order = wp_remote_post( $url_for_order, array( 
-  'method' => 'POST',
-  'timeout' => 45,
-  'redirection' => 5,
-  'httpversion' => '1.0',
-  'blocking' => true,
-  'headers' => $headers_for_order,
-  'body' => json_encode($data_order),
-  'cookies' => array()
-));
-
-
-
-if ( is_wp_error( $response_for_order ) ) {
-  
-} else {
-  $status_code = wp_remote_retrieve_response_code( $response_for_order );
-  $response_order_body = json_decode($response_for_order['body']); 
-  
-
-// print_r($status_code) ; 
-// print_r($response_order_body) ; 
-
-  if ($status_code == 200) {
-
-      global $wpdb;
-      $table_name = $wpdb->prefix . 'pathao_shipping';
-      $data = array(
-        'order_id' => $formdata['get_order_id'],
-      );
-      $wpdb->insert( $table_name, $data );
-  
-
-    // return wp_send_json_success($response_order_body->message); 
-    $data = array(
-      'status' => $status_code,
-      'message' => $response_order_body->message,
-    ) ;
-    return wp_send_json($data);  
-   
-  }elseif($status_code == 422){
-
-    // return wp_send_json_success($response_order_body->message); 
-    $data = array(
-      'status' => $status_code,
-      'message' => $response_order_body->message ,
-    ) ;
-    return wp_send_json($data);  
-
-  }else {
-    return wp_send_json_success('order is not synced'); 
-  }
-
-}
-
-// api call for create order end 
-
-wp_die() ;
-
-}
 
 
 // Create the database table on plugin activation
@@ -444,6 +320,8 @@ function create_five_fields_table() {
   $sql = "CREATE TABLE $table_name (
     id bigint(20) NOT NULL AUTO_INCREMENT,
     order_id bigint(20) NOT NULL,
+    consignment_id varchar(255) NOT NULL,
+    delivery_fee varchar(255) NOT NULL,
     PRIMARY KEY  (id)
   ) $charset_collate;";
 

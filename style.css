@@ -9,10 +9,13 @@
 	padding: 5px 15px;
 }
 .get_store_class {
-	width: 130px;
+	width: 115px;
 }
 .get_district_class {
-	width: 130px;
+	width: 115px;
+}
+.get_zone_class {
+	width: 115px;
 }
 .prev.page-numbers {
 	color: #fff;
@@ -38,7 +41,7 @@
 	line-height: 2;
 }
 .push_order_success, .push_order_synced {
-	background: blue;
+	background: #e61f24;
 	color: #fff;
     padding: 5px 20px;
 	margin-top: 10px !important;
@@ -75,7 +78,7 @@
 	margin: 10px;
 }
 .save_pathao_settings {
-	background: blue;
+	background: #e61f24;
 	color: #fff;
 	padding: 10px 40px;
 	font-size: 16px;
@@ -85,7 +88,7 @@
 	min-width: 130px;
 }
 #shipping_cities, #get_stores {
-	background: blue;
+	background: #e61f24;
 	color: #fff;
 	padding: 5px 20px;
 }

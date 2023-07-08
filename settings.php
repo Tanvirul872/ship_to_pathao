@@ -71,7 +71,7 @@ if ($data) {
 </div>
 
 <div class="form_box">
-<label for="myCheckbox"> User Passw6rd </label>
+<label for="myCheckbox"> User Password </label>
 <input type="text" id="get_user_password" name="get_user_password" value="<?php echo esc_attr($user_password); ?>"> 
 </div>
 
