@@ -1,23 +1,197 @@
 jQuery(document).ready(function($){
 
-    
+
+    // select2 function 
+    $(document).ready(function() {
+        $('.js-example-basic-multiple').select2();y
+    });
+
+
+
+//  $('.select_city_dropdown').on('click', function() {
+//           alert('Dropdown clicked!');
+//  });
+ 
+
+//  import cities 
+ $('#shipping_cities').on('click', function() {
+          var ajax_url = plugin_ajax_object.ajax_url;
+          var data = {
+              'action': 'save_shipping_cities',
+              'formData': 1
+          };
+         
+          $.ajax({
+              url: ajax_url,
+              type: 'post',
+              data: data,
+              success: function(response){
+                  alert(response.data) ;
+
+              }
+          });
+
+
+ });
+ 
+
+ //  import stores 
+ $('#get_stores').on('click', function() {
+  var ajax_url = plugin_ajax_object.ajax_url;
+  var data = {
+      'action': 'save_stores',
+      'formData': 1
+  };
+ 
+  $.ajax({
+      url: ajax_url,
+      type: 'post',
+      data: data,
+      success: function(response){
+          alert(response.data) ;
+
+      }
+  });
+
+
+});
+
+
+
+ //  save settings  
+ $('.save_pathao_settings').on('click', function() { 
+
+
+
+  get_client_id = $('#get_client_id').val() ;
+  get_client_secret = $('#get_client_secret').val() ;
+  get_item_desc = $('#get_item_desc').val() ;
+  get_special_info = $('#get_special_info').val() ;
+  get_user_password = $('#get_user_password').val() ;
+  get_user_name = $('#get_user_name').val() ;
+  get_special_info = $('#get_special_info').val() ;
+
+
+  var formData = 
+  'get_client_id=' + get_client_id+
+  '&get_client_secret=' + get_client_secret+
+  '&get_user_name=' + get_user_name+
+  '&get_user_password=' + get_user_password+
+  '&get_item_desc=' + get_item_desc+
+  '&get_special_info=' + get_special_info;
+
+
+
+  alert(get_client_id) ; 
+
+  var ajax_url = plugin_ajax_object.ajax_url;
+  var data = {
+      'action': 'save_settings',
+      'formData': formData,
+  };
+ 
+  $.ajax({
+      url: ajax_url,
+      type: 'post',
+      data: data,
+      success: function(response){
+          alert(response.data) ;
+
+      }
+  });
+
+
+});
+
+
+
+
+ $(document).on('change', '.get_district_class', function() {
+    var selectedCity = $(this).val();
+    alert("Selected option: " + selectedCity);
+  
+    var ajax_url = plugin_ajax_object.ajax_url;
+    var data = {
+      'action': 'get_zones_by_city',
+      'formData': selectedCity
+    };
+  
+    var selectElement = $(this).closest('tr').find('.get_zone_class'); // Find the select element within the same table row
+  
+    $.ajax({
+      url: ajax_url,
+      type: 'post',
+      data: data,
+      success: function(response) {
+        console.log(response);
+        var get_zones = response;
+  
+        // Clear any existing options
+        selectElement.empty();
+  
+        $.each(get_zones, function(index, zone) {
+          // Create a new option element
+          var option = $('<option>');
+  
+          // Set the value and text of the option
+          option.val(zone.zone_id);
+          option.text(zone.zone_name);
+  
+          // Append the option to the select element
+          selectElement.append(option);
+        });
+      },
+      error: function(xhr, textStatus, error) {
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+      }
+    });
+  });
+
+
+
+
+
+
+
+
+
+
+
+// order sorting by order status  
+ $(document).on('change', '.select_order_status', function() {
+    var selectedStatus = $(this).val();
+    alert("Selected order: " + selectedStatus);
+    var currentURL = window.location.href; // Get the current URL
+    // Remove any existing order_status parameter from the URL
+    var updatedURL = currentURL.replace(/([&?])order_status=[^&]+/i, '$1');
+    // Append the selected order_status parameter to the URL
+    updatedURL += (updatedURL.indexOf('?') >= 0 ? '&' : '?') + 'order_status=' + selectedStatus;
+    // Redirect to the updated URL
+    window.location.href = updatedURL;
+
+  });
+  
+ 
+
+  
+//push order 
 $('.push_order').change(function (event) {
     event.preventDefault();
   
-    alert('push_order') ;
-
-
- 
-    
-   
-
-
     var get_order_id = $(this).closest("tr").find(".get_order_id").attr("id");
     var get_name = $(this).closest("tr").find(".get_name").attr("get_name");
     var get_address = $(this).closest("tr").find(".get_address").attr("get_address");
     var get_phone = $(this).closest("tr").find(".get_phone").attr("get_phone");
     var get_email = $(this).closest("tr").find(".get_email").attr("get_email");
     var get_total = $(this).closest("tr").find(".get_total").attr("get_total");
+    var get_city = $(this).closest("tr").find(".get_district_class").val();
+    var get_zone = $(this).closest("tr").find(".get_zone_class").val();
+    var get_store = $(this).closest("tr").find(".get_store_class").val();
+
+    alert(get_store) ;
+
 
     var formData = 
                 'get_order_id=' + get_order_id+
@@ -25,11 +199,14 @@ $('.push_order').change(function (event) {
                 '&get_address=' + get_address+
                 '&get_phone=' + get_phone+
                 '&get_email=' + get_email+
-                '&get_total=' + get_total;
+                '&get_total=' + get_total+
+                '&get_city=' + get_city+
+                '&get_zone=' + get_zone+
+                '&get_store=' + get_store;
 
     var ajax_url = plugin_ajax_object.ajax_url;
     var data = {
-        'action': 'pushapi_to_steadfast',
+        'action': 'pushapi_to_pathao',
         'formData': formData
   
     };
@@ -41,12 +218,14 @@ $('.push_order').change(function (event) {
         data: data,
         success: function(response){
             
+          alert(response.data) ;
+          
             if(response.data==400){
-                alert('Already added to steadfast dashboard before') ; 
+                alert('Already added to pathao dashboard before') ; 
                
                 $(this).closest("tr").find(".push_checkbox").addClass("d-none")
              }else if(response.data==200){
-                alert('Added to steadfast dashboard') ; 
+                alert('Added to pathao dashboard') ; 
                 $(this).closest("tr").find(".push_order").addClass("d-none")
              }
 
