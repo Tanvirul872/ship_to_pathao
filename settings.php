@@ -9,17 +9,17 @@ wp_head();
 
 
 
-
-
-<div class="ship_cities">
- <input type="checkbox" id="shipping_cities" name="shipping_cities">
+<div class="form_box">
  <label for="myCheckbox">Import Cities</label>
+ <!-- <input type="checkbox" id="shipping_cities" name="shipping_cities"> -->
+ <a href="#" id="shipping_cities" name="shipping_cities"> Click </a>
 </div>
 
 
-<div class="ship_cities">
- <input type="checkbox" id="get_stores" name="get_stores">
+<div class="form_box">
  <label for="myCheckbox">Import Stores</label>
+ <a href="#" id="get_stores" name="get_stores"> Click </a>
+ <!-- <input type="checkbox" id="get_stores" name="get_stores"> -->
 </div>
 
 
@@ -54,24 +54,24 @@ if ($data) {
 }
 ?>
 
-<div class="api_client_id">
+<div class="form_box">
 <label for="myCheckbox">Api Client Id </label>
 <input type="text" id="get_client_id" name="get_client_id" value="<?php echo esc_attr($api_client_id); ?>">
 
 </div>
 
-<div class="api_client_secret">
+<div class="form_box">
 <label for="myCheckbox">Api Client Secret </label>
 <input type="text" id="get_client_secret" name="get_client_secret" value="<?php echo esc_attr($api_client_secret); ?>"> 
 </div>
 
-<div class="get_user_name">
+<div class="form_box">
 <label for="myCheckbox"> User Name </label>
 <input type="text" id="get_user_name" name="get_user_name" value="<?php echo esc_attr($user_name); ?>"> 
 </div>
 
-<div class="get_user_password">
-<label for="myCheckbox"> User Name </label>
+<div class="form_box">
+<label for="myCheckbox"> User Passw6rd </label>
 <input type="text" id="get_user_password" name="get_user_password" value="<?php echo esc_attr($user_password); ?>"> 
 </div>
 

@@ -7,8 +7,6 @@
  * Author URI: bongotheme.com
  */
 
-
-
  include('ajax-actions.php');
 
 
@@ -48,19 +46,6 @@ function wc_order_data_table_page() {
     'pathao_shipment_settings',
   );
 
-  //    // Add the submenu page for inactive member list
-  //    add_submenu_page(
-  //     'wc-order-data-table',    // Parent menu slug
-  //     'inactive Member',     // Page title
-  //     'inactive Member',     // Menu title
-  //     'manage_options',   // Capability required to access the page
-  //     'inactive-member',     // Menu slug
-  //     'boc_inactive_members_page' // Callback function to render the page content
-  // );
-
-  
-
-
 }
 add_action( 'admin_menu', 'wc_order_data_table_page' );
 
@@ -80,8 +65,6 @@ function wc_order_data_table_content() {
   
   $paged  =  $_GET['paged'] ? $_GET['paged'] : 1 ; 
   $order_status = $_GET['order_status'] ;  
-
-
 
 
   if($order_status){
@@ -125,13 +108,13 @@ echo '<h1>Order Data Table</h1>';
   $dynamic_url = add_query_arg( 'page', 'wc-order-data-table', admin_url( 'admin.php' ) );
   ?>
 </select> 
-<a  href="<?php echo $dynamic_url; ?>"> Reset </a>
+<a  href="<?php echo $dynamic_url; ?>" class="reset_button"> Reset </a>
 
 
 
 
 <?php
-echo '<table class="wp-list-table widefat fixed striped posts WP_List_Table">';
+echo '<table class="wp-list-table widefat fixed striped posts WP_List_Table show_preloader">';
 echo '<thead>';
 echo '<tr>';
 echo '<th scope="col">Order ID</th>';
@@ -198,7 +181,7 @@ while ( $orders->have_posts() ) {
     
 <form action="#" id="select_city"  class="select_city_dropdown">
 <label for="get_district">Choose a city:</label> 
-<select id="get_district" class="get_district_class" name="district">
+<select id="get_district" class="get_district_class js-example-basic-multiple" name="district">
   <?php
     global $wpdb;
     $table_name = $wpdb->prefix . 'pathao_city_list';
@@ -214,7 +197,7 @@ while ( $orders->have_posts() ) {
 </select>
 
 <label for="get_zone">Choose a zone:</label> 
-<select id="get_zone" class="get_zone_class " name="zone">
+<select id="get_zone" class="get_zone_class" name="zone">
  <option value=''>Select a Zone</option>
 </select> 
 </form>
@@ -254,14 +237,12 @@ while ( $orders->have_posts() ) {
     $order_ids = $wpdb->get_col("SELECT order_id FROM $table_name");
 
     if (in_array($order_id, $order_ids)) {
-        echo '<input type="checkbox" disabled checked class="push_order">';
-        
+      echo '<a  class="push_order_synced" > Order Synced <a>';
     } else {
-        echo '<input type="checkbox" class="push_order">';
-        echo '<a  class="push_order"> Push order <a>,';
+        echo '<a  class="push_order push_order_class"> Push order <a>';
+        echo '<a  class="push_order_success" style="display:none"> Order Synced <a>';
     }
     echo '</td>';
-
     echo '</tr>';
 }
 
@@ -312,17 +293,8 @@ function pushapi_to_pathao() {
     $data = $wpdb->get_row("SELECT * FROM $table_name");
     
     
-        $item_description = $data->item_descripton;
-        $special_information = $data->special_information;
-  
-
-  // // api call for access token start
-  // $client_id = 'WZdPN5zaKg' ; 
-  // $client_secret = 'GuxjOKMRSNoj1AkMexLY6PMOR5jNEKkZxm04b9SQ' ; 
-  // $username = 'bm175581@gmail.com' ; 
-  // $password = 'anmtanvir872' ; 
-  // $grant_type = 'anmtanvir872' ; 
-
+   $item_description = $data->item_descripton;
+   $special_information = $data->special_information;
   
   $client_id = $data->api_client_id;
   $client_secret = $data->api_client_secret;
@@ -390,8 +362,8 @@ $data_order = array(
 'delivery_type' => '48',
 'item_type' => '2',
 'special_instruction' => $special_information,
-'item_quantity' => '3',
-'item_weight' => '3',
+'item_quantity' => '1',
+'item_weight' => '1',
 'amount_to_collect' => $formdata['get_total'],
 'item_description' => $item_description, 
 
@@ -419,8 +391,8 @@ if ( is_wp_error( $response_for_order ) ) {
   $response_order_body = json_decode($response_for_order['body']); 
   
 
-print_r($status_code) ; 
-print_r($response_order_body) ; 
+// print_r($status_code) ; 
+// print_r($response_order_body) ; 
 
   if ($status_code == 200) {
 
@@ -432,11 +404,21 @@ print_r($response_order_body) ;
       $wpdb->insert( $table_name, $data );
   
 
-    return wp_send_json_success($response_order_body->message); 
+    // return wp_send_json_success($response_order_body->message); 
+    $data = array(
+      'status' => $status_code,
+      'message' => $response_order_body->message,
+    ) ;
+    return wp_send_json($data);  
    
   }elseif($status_code == 422){
 
-    return wp_send_json_success($response_order_body->message); 
+    // return wp_send_json_success($response_order_body->message); 
+    $data = array(
+      'status' => $status_code,
+      'message' => $response_order_body->message ,
+    ) ;
+    return wp_send_json($data);  
 
   }else {
     return wp_send_json_success('order is not synced'); 

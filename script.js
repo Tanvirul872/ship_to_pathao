@@ -1,17 +1,9 @@
 jQuery(document).ready(function($){
 
-
     // select2 function 
     $(document).ready(function() {
         $('.js-example-basic-multiple').select2();y
     });
-
-
-
-//  $('.select_city_dropdown').on('click', function() {
-//           alert('Dropdown clicked!');
-//  });
- 
 
 //  import cities 
  $('#shipping_cities').on('click', function() {
@@ -31,10 +23,11 @@ jQuery(document).ready(function($){
               }
           });
 
-
  });
  
 
+
+ 
  //  import stores 
  $('#get_stores').on('click', function() {
   var ajax_url = plugin_ajax_object.ajax_url;
@@ -154,11 +147,6 @@ jQuery(document).ready(function($){
 
 
 
-
-
-
-
-
 // order sorting by order status  
  $(document).on('change', '.select_order_status', function() {
     var selectedStatus = $(this).val();
@@ -177,7 +165,7 @@ jQuery(document).ready(function($){
 
   
 //push order 
-$('.push_order').change(function (event) {
+$('.push_order').click(function (event) {
     event.preventDefault();
   
     var get_order_id = $(this).closest("tr").find(".get_order_id").attr("id");
@@ -190,8 +178,21 @@ $('.push_order').change(function (event) {
     var get_zone = $(this).closest("tr").find(".get_zone_class").val();
     var get_store = $(this).closest("tr").find(".get_store_class").val();
 
-    alert(get_store) ;
 
+    if (get_city === '') {
+      alert('Please select a district/city');
+    }else if(get_zone === ''){
+      alert('Please select a zone');
+    }else if(get_store === ''){
+      alert('Please select a store');
+    }else if (get_address.length < 10) {
+      alert('The address should be at least 10 characters long.Please edit your address.');
+    }
+    
+    //show preloader 
+    if (get_city && get_zone && get_store ) {
+      $('.show_preloader').addClass('processing-loader');
+    } 
 
     var formData = 
                 'get_order_id=' + get_order_id+
@@ -210,29 +211,26 @@ $('.push_order').change(function (event) {
         'formData': formData
   
     };
-   
-  
+    var $tr = $(this).closest("tr");
+    var $pushOrderClassElements = $tr.find(".push_order_class");
+    var $pushOrderSuccess = $tr.find(".push_order_success");
+
     $.ajax({
         url: ajax_url,
         type: 'post',
         data: data,
         success: function(response){
-            
-          alert(response.data) ;
-          
-            if(response.data==400){
-                alert('Already added to pathao dashboard before') ; 
-               
-                $(this).closest("tr").find(".push_checkbox").addClass("d-none")
-             }else if(response.data==200){
-                alert('Added to pathao dashboard') ; 
-                $(this).closest("tr").find(".push_order").addClass("d-none")
-             }
-
-           
-          // console.log(coupon_code);
         
-            // alert('successfully store data') ;
+         if(response.status==200){
+            alert(response.message) ;
+            $pushOrderClassElements.css("display", "none"); 
+            $pushOrderSuccess.css("display", "block"); 
+            $('.show_preloader').removeClass('processing-loader'); //remove preloader 
+         }else if(response.status==422){
+            //  alert(response.message) ;
+         }
+
+
         }
     });
   

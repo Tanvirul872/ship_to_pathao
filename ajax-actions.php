@@ -1,18 +1,14 @@
 <?php 
 
 
-
-
 add_action( 'wp_ajax_save_shipping_cities', 'save_shipping_cities' );
 add_action( 'wp_ajax_nopriv_save_shipping_cities', 'save_shipping_cities' );
 function save_shipping_cities() {
-
 
   global $wpdb;
   $table_name = $wpdb->prefix . 'pathao_settings';
   // Retrieve data from the database
   $data = $wpdb->get_row("SELECT * FROM $table_name");
-
 
   $client_id = $data->api_client_id;
   $client_secret = $data->api_client_secret;
@@ -20,12 +16,6 @@ function save_shipping_cities() {
   $password = $data->user_password;
   $grant_type = $data->user_password;
 
-  // api call for access token start
-  // $client_id = 'WZdPN5zaKg' ; 
-  // $client_secret = 'GuxjOKMRSNoj1AkMexLY6PMOR5jNEKkZxm04b9SQ' ; 
-  // $username = 'bm175581@gmail.com' ; 
-  // $password = 'anmtanvir872' ; 
-  // $grant_type = 'anmtanvir872' ; 
   $headers = array(
       "accept" => "application/json",
       "content-Type" => "application/json",
@@ -110,23 +100,11 @@ wp_die() ;
 
 
 
-
-
-
-
-
 // get stores 
 add_action( 'wp_ajax_save_stores', 'save_stores' );
 add_action( 'wp_ajax_nopriv_save_stores', 'save_stores' );
 function save_stores() {
 
-  // api call for access token start
-  // $client_id = 'WZdPN5zaKg' ; 
-  // $client_secret = 'GuxjOKMRSNoj1AkMexLY6PMOR5jNEKkZxm04b9SQ' ; 
-  // $username = 'bm175581@gmail.com' ; 
-  // $password = 'anmtanvir872' ; 
-  // $grant_type = 'anmtanvir872' ; 
-  
   global $wpdb;
   $table_name = $wpdb->prefix . 'pathao_settings';
   // Retrieve data from the database
@@ -241,14 +219,7 @@ add_action( 'wp_ajax_get_zones_by_city', 'get_zones_by_city' );
 add_action( 'wp_ajax_nopriv_get_zones_by_city', 'get_zones_by_city' );
 function get_zones_by_city() {
 
-    $city_id = $_POST['formData'] ; 
-
-  // api call for access token start
-  // $client_id = 'WZdPN5zaKg' ; 
-  // $client_secret = 'GuxjOKMRSNoj1AkMexLY6PMOR5jNEKkZxm04b9SQ' ; 
-  // $username = 'bm175581@gmail.com' ; 
-  // $password = 'anmtanvir872' ; 
-  // $grant_type = 'anmtanvir872' ; 
+  $city_id = $_POST['formData'] ; 
 
   global $wpdb;
   $table_name = $wpdb->prefix . 'pathao_settings';
@@ -336,17 +307,10 @@ wp_die() ;
 
 
 
-
-
-
-
-
 // save settings   
 add_action( 'wp_ajax_save_settings', 'save_settings' );
 add_action( 'wp_ajax_nopriv_save_settings', 'save_settings' );
 function save_settings() {
-
- 
 
   $formdata = [];
   wp_parse_str($_POST['formData'], $formdata);
@@ -369,7 +333,7 @@ function save_settings() {
               'item_descripton' => $formdata['get_item_desc'],
               'special_information' => $formdata['get_special_info'],
           ],
-          ['id' => 1] // Specify the condition to update the correct row(s)
+          ['id' => 1] 
       );
   } else {
       // Insert data into the table
@@ -386,10 +350,7 @@ function save_settings() {
       );
   }
   
-  
-
-    return wp_send_json_success('settings saved successfully'); 
-
+  return wp_send_json_success('settings saved successfully'); 
 
 wp_die() ;
 

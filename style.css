@@ -1,0 +1,93 @@
+/* plugin css start  */  
+
+ a:focus {
+	color: #fff !important;
+} 
+.reset_button {
+	background: rgb(37, 27, 172);
+	color: #fff !important;
+	padding: 5px 15px;
+}
+.get_store_class {
+	width: 130px;
+}
+.get_district_class {
+	width: 130px;
+}
+.prev.page-numbers {
+	color: #fff;
+	padding: 5px 20px;
+	background: rebeccapurple;
+	border-radius: 10px;
+}
+.page-numbers {
+	background: rebeccapurple;
+	padding: 5px 10px;
+	border-radius: 5px 5px;
+	color: #fff;
+}
+.page-numbers.current {
+	background: red;
+}
+.push_order_class {
+	background: green;
+	color: #fff;
+	padding: 5px 20px;
+	margin-top: 10px !important;
+	cursor: pointer;
+	line-height: 2;
+}
+.push_order_success, .push_order_synced {
+	background: blue;
+	color: #fff;
+    padding: 5px 20px;
+	margin-top: 10px !important;
+	/* cursor: none; */
+	line-height: 2;
+} 
+.push_order_class:hover{
+    color: #fff;
+} 
+.processing-loader {
+    position: relative;
+} 
+.processing-loader:after {
+    position: absolute;
+    content: '';
+    background: rgb(0 0 0 / 15%);
+    background-image: url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921);
+    background-position: 50% 20%;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    z-index: 9;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+/* settings page css  */
+.form_box {
+	display: flex;
+	gap: 21px;
+	align-items: center;
+	margin: 10px;
+}
+.save_pathao_settings {
+	background: blue;
+	color: #fff;
+	padding: 10px 40px;
+	font-size: 16px;
+}
+.form_box label {
+	margin-right: ;
+	min-width: 130px;
+}
+#shipping_cities, #get_stores {
+	background: blue;
+	color: #fff;
+	padding: 5px 20px;
+}
+
+/* plugin css end  */
